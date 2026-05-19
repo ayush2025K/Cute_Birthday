@@ -400,9 +400,9 @@
         /* Secret Letter Modal */
         .modal { position: fixed; inset:0; display:none; justify-content:center; align-items:center; z-index: 30000; }
         .modal.show { display:flex; }
-        .modal .paper { width: 90%; max-width: 900px; background: linear-gradient(180deg,#fff,#fff9f0); padding: 40px; border-radius: 12px; box-shadow: 0 50px 120px rgba(0,0,0,0.8); transform: scale(0.98); opacity: 0; transition: all 0.6s; }
-        .modal.show .paper { transform: scale(1); opacity:1; }
-        .typewriter { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: #222; line-height: 1.8; min-height: 220px; }
+    .modal .paper { width: 90%; max-width: 900px; background: linear-gradient(180deg,#fff,#fff9f0); padding: 32px; border-radius: 12px; box-shadow: 0 50px 120px rgba(0,0,0,0.8); transform: scale(0.98); opacity: 0; transition: all 0.6s; /* make modal content scrollable when too tall */ max-height: 85vh; overflow: auto; -webkit-overflow-scrolling: touch; }
+    .modal.show .paper { transform: scale(1); opacity:1; }
+    .typewriter { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: #222; line-height: 1.8; min-height: 160px; white-space: normal; word-break: break-word; }
 
         /* Vignette for cinematic feel */
         .vignette { pointer-events:none; position: fixed; inset:0; background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%); z-index: 50; mix-blend-mode: multiply; }
@@ -848,7 +848,9 @@
             const letterModal = $('#letterModal'), typeEl = $('#typewriter'), closeLetter = $('#closeLetter');
             const secretText = `My Dearest Shreya,\n\nOn this day I want every star to spell your name and every breeze to sing your favorite song. You are my morning light and my midnight moon. I promise to cherish you, protect you, and love you with all that I am. Happy birthday, my love. Forever yours.`;
             function fadeAudio(audioEl, targetVol, duration=600){ if (!audioEl) return; const start = audioEl.volume; const diff = targetVol - start; const steps = 30; let cur=0; const iv = setInterval(()=>{ cur++; const p = cur/steps; audioEl.volume = Math.max(0, Math.min(1, start + diff*p)); if (cur>=steps) clearInterval(iv); }, Math.max(10, duration/steps)); }
-            function openLetter(){ if (!letterModal || !typeEl) return; letterModal.classList.add('show'); letterModal.setAttribute('aria-hidden','false'); typeEl.innerHTML=''; let i=0; const t = setInterval(()=>{ if (i>=secretText.length){ clearInterval(t); try{ confetti({ particleCount: 140, spread: 90 }); }catch(e){} return; } const ch = secretText[i++]; typeEl.innerHTML += ch==='\n' ? '<br>' : (ch===' ' ? '&nbsp;' : ch); }, 22); fadeAudio(music, 0.2, 800); }
+            function openLetter(){ if (!letterModal || !typeEl) return; letterModal.classList.add('show'); letterModal.setAttribute('aria-hidden','false'); // scroll paper to top so content is visible
+                const paper = letterModal.querySelector('.paper'); if (paper) { paper.scrollTop = 0; paper.focus && paper.focus(); }
+                typeEl.innerHTML=''; let i=0; const t = setInterval(()=>{ if (i>=secretText.length){ clearInterval(t); try{ confetti({ particleCount: 140, spread: 90 }); }catch(e){} return; } const ch = secretText[i++]; typeEl.innerHTML += ch==='\n' ? '<br>' : (ch===' ' ? '&nbsp;' : ch); }, 22); fadeAudio(music, 0.2, 800); }
             function closeLetterModal(){ if (!letterModal) return; letterModal.classList.remove('show'); letterModal.setAttribute('aria-hidden','true'); if (music) music.volume = 1; }
             if (closeLetter) closeLetter.addEventListener('click', closeLetterModal);
             const surpriseBtn = $('#surpriseBtn'); if (surpriseBtn) surpriseBtn.addEventListener('click', openLetter);
